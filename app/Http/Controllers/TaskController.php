@@ -25,7 +25,7 @@ class TaskController extends Controller
 
     function create(\Illuminate\Http\Request $request)
     {
-        $task = Task::create(
+        $new_task = Task::create(
             [
                 "user_id" => Auth::id(),
                 "name" => $request->name,
@@ -35,6 +35,12 @@ class TaskController extends Controller
                 "project_id" => $request->project_id
             ],
         );
+
+            $task = Task::where("tasks.user_id", Auth::id())
+            ->where("tasks.id", $new_task->id)
+            ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
+            ->select("tasks.*", "projects.name as project", "projects.color as project_color")->first();
+
         return response()->json($task, 201);
     }
 
@@ -43,6 +49,12 @@ class TaskController extends Controller
         $d = $request->all();
         $task = Task::findOrFail($id);
         $task->update($d);
+
+                    $task = Task::where("tasks.user_id", Auth::id())
+            ->where("tasks.id", $task->id)
+            ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
+            ->select("tasks.*", "projects.name as project", "projects.color as project_color")->first();
+
 
         return response()->json($task, 200);
     }
