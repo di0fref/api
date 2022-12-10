@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Google_Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use  App\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -27,6 +27,8 @@ class AuthController extends Controller
     {
         $idToken = $request->input("idToken");
 
+//        $token = auth()->setTTL(7200)->attempt($credentials);
+
 
         $client = new Google_Client(['client_id' => env("CLIENT_ID")]);
         $payload = $client->verifyIdToken($idToken);
@@ -37,7 +39,6 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'Invalid token'], 401);
         }
-
 
         $this->validate($request, [
             'email' => 'required|string',
@@ -59,7 +60,6 @@ class AuthController extends Controller
             if (!$token = Auth::attempt($credentials)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
-
         }
 
         return $this->respondWithToken($token);
@@ -110,7 +110,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'user' => auth()->user(),
-            'expires_in' => auth()->factory()->getTTL() * 60 * 24
+            'expires_in' => auth()->factory()->getTTL()
         ]);
     }
 }
