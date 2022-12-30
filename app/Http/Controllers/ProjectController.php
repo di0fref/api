@@ -25,4 +25,13 @@ class ProjectController extends Controller
         );
         return response()->json($project, 201);
     }
+
+     function update($id, \Illuminate\Http\Request $request)
+    {
+        $d = $request->all();
+        $project = Project::findOrFail($id);
+        $project->update($d);
+
+        return response()->json($project, 200);
+    }
 }

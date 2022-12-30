@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Models;
+
 /* https://auth0.com/blog/developing-restful-apis-with-lumen/ */
+
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Task extends ModelUuid
 {
@@ -22,4 +25,10 @@ class Task extends ModelUuid
         "completed" => "boolean",
         "deleted" => "boolean"
     ];
+
+    protected function due(): Attribute
+    {
+        return Attribute::make(set: fn($value) => ($value == "" or $value == null) ? null : $value,);
+    }
+
 }
