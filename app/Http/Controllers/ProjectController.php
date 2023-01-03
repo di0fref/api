@@ -1,28 +1,50 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Project;
+use App\Models\ProjectsUsers;
 use Illuminate\Support\Facades\Auth;
 use function response;
 
 class ProjectController extends Controller
 {
-    function getAll(\Illuminate\Http\Request $request){
-        $project = Project::where("user_id", Auth::id())
+    function getAll(\Illuminate\Http\Request $request)
+    {
+        $project = Project::where("projects_users.user_id", Auth::id())
             ->orderBy("name", "asc")
             ->orderBy("order", "asc")
+            ->leftJoin("projects_users", "projects.user_id", "=", "projects_users.user_id")
             ->get();
 
         return response()->json(
             $project
         );
-
     }
 
-    function create(\Illuminate\Http\Request $request){
+
+    function create(\Illuminate\Http\Request $request)
+    {
         $project = Project::create(
-            array_merge(array("user_id" => Auth::id(),), $request->all())
+            array_merge(array("user_id" => Auth::id()), $request->all())
         );
+
+        ProjectsUsers::create(
+            [
+                "user_id" => Auth::id(),
+                "project_id" => $project->id
+            ]
+        );
+
         return response()->json($project, 201);
+    }
+
+    function update($id, \Illuminate\Http\Request $request)
+    {
+        $d = $request->all();
+        $project = Project::findOrFail($id);
+        $project->update($d);
+
+        return response()->json($project, 200);
     }
 }

@@ -11,7 +11,7 @@ class TaskController extends Controller
 {
     function getAll(\Illuminate\Http\Request $request)
     {
-        $task = Task::where("tasks.user_id", Auth::id())
+        $task = Task::whereBelongsTo(Auth::user())
             ->orderBy("due", "asc")
             ->orderBy("tasks.order", "asc")
             ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
@@ -36,7 +36,7 @@ class TaskController extends Controller
             ],
         );
 
-            $task = Task::where("tasks.user_id", Auth::id())
+        $task = Task::whereBelongsTo(Auth::user())
             ->where("tasks.id", $new_task->id)
             ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
             ->select("tasks.*", "projects.name as project", "projects.color as project_color")->first();
@@ -50,11 +50,10 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $task->update($d);
 
-                    $task = Task::where("tasks.user_id", Auth::id())
+        $task = Task::whereBelongsTo(Auth::user())
             ->where("tasks.id", $task->id)
             ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
             ->select("tasks.*", "projects.name as project", "projects.color as project_color")->first();
-
 
         return response()->json($task, 200);
     }
@@ -62,6 +61,6 @@ class TaskController extends Controller
     function delete($id)
     {
         Task::findOrFail($id)->delete();
-        return response('Deleted Successfully', 200);
+        return response()->json(["id" => $id], 200);
     }
 }

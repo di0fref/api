@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTasks extends Migration
+class CreateTasksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -20,8 +20,11 @@ class CreateTasks extends Migration
             $table->text('text')->nullable();
             $table->string("type")->nullable()->default("task");
             $table->date("due")->nullable()->default(null);
+            $table->dateTime("deleted_at")->nullable()->default(null);
             $table->boolean('deleted')->default(0);
             $table->boolean("completed")->default(false);
+            $table->dateTime("completed_at")->nullable()->default(null);
+            $table->boolean("pinned")->default(false);
             $table->string("user_id")->default(0);
             $table->integer("order")->default(0)->nullable();
             $table->enum("prio", ["low", "normal", "high"])->default("normal");

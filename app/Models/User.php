@@ -21,6 +21,17 @@ class User extends ModelUuid implements AuthenticatableContract, AuthorizableCon
         'email',
         'password',
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
