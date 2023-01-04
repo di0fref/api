@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProjectsUsers;
+use App\Models\ShareUsers;
 use Google_Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,9 +29,6 @@ class AuthController extends Controller
     {
         $idToken = $request->input("idToken");
 
-//        $token = auth()->setTTL(7200)->attempt($credentials);
-
-
         $client = new Google_Client(['client_id' => env("CLIENT_ID")]);
         $payload = $client->verifyIdToken($idToken);
         if ($payload) {
@@ -51,16 +50,47 @@ class AuthController extends Controller
 
             /* Create the user */
             $user_data = $request->input("user");
-            User::create([
+            $user = User::create([
                 'name' => $user_data["displayName"],
                 'email' => $request->get("email"),
                 'password' => Hash::make($request->get("password"))
             ]);
 
+
+            /* Find shares and assign them correctly */
+
+//            $shares = ShareUsers::where("email", Auth::user()->email)->get();
+//
+//
+//
+//            if($shares){
+//                foreach ($shares as $share) {
+//                    ProjectsUsers::create(
+//                        array(
+//                            "user_id" => $user->id,
+//                            "project_id" => $share->project_id,
+//                        ));
+//                }
+
+
+
             if (!$token = Auth::attempt($credentials)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
         }
+//
+//                    $shares = ShareUsers::where("email", Auth::user()->email)->get();
+//
+//
+//
+//            if($shares) {
+//                foreach ($shares as $share) {
+//                    ProjectsUsers::create(array(
+//                            "user_id" => Auth::id(),
+//                            "project_id" => $share->project_id,
+//                        ));
+//                }
+//            }
 
         return $this->respondWithToken($token);
     }
