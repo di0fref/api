@@ -16,8 +16,10 @@ class CreateShareUsersTable extends Migration
         Schema::create('share_users', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->string("email")->default("");
-            $table->uuid("project_id");
-            $table->uuid("user_id");
+            $table->string("project_id")->default("");
+            $table->string("shared_user_id")->default(null)->nullable(true);
+            $table->string("shared_user_id")->default(null)->nullable(true);
+            $table->string("user_id")->default("");
             $table->enum("status", ["pending", "cancelled", "accepted"])->default("pending");
             $table->timestamps();
             $table->boolean('edit')->default(0);

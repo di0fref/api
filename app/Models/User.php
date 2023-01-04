@@ -12,7 +12,7 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Ramsey\Uuid\Uuid;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends ModelUuid implements AuthenticatableContract, AuthorizableContract, JWTSubject
+class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
     use Authenticatable, Authorizable;
 
@@ -20,6 +20,7 @@ class User extends ModelUuid implements AuthenticatableContract, AuthorizableCon
         'name',
         'email',
         'password',
+        'id'
     ];
 
     public function tasks()
@@ -50,5 +51,10 @@ class User extends ModelUuid implements AuthenticatableContract, AuthorizableCon
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getIncrementing()
+    {
+        return false;
     }
 }

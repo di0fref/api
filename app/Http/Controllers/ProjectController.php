@@ -11,10 +11,10 @@ class ProjectController extends Controller
 {
     function getAll(\Illuminate\Http\Request $request)
     {
-        $project = Project::where("projects.user_id", Auth::id())
+        $project = Project::where("projects_users.user_id", Auth::id())
             ->orderBy("name", "asc")
             ->orderBy("order", "asc")
-            ->leftJoin("projects_users", "projwects.id", "=", "projects_users.project_id")
+            ->leftJoin("projects_users", "projects.id", "=", "projects_users.project_id")
             ->select("projects.*")->get();
 
         return response()->json(

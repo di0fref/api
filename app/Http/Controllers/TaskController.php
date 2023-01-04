@@ -11,16 +11,21 @@ class TaskController extends Controller
 {
     function getAll(\Illuminate\Http\Request $request)
     {
-        $task = Task::whereBelongsTo(Auth::user())
-            ->orderBy("due", "asc")
-            ->orderBy("tasks.order", "asc")
+        $tasks = Task::whereBelongsTo(Auth::user())
+
             ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
-            ->select("tasks.*", "projects.name as project", "projects.color as project_color")->get();
+            ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
+            ->orWhere("projects_users.user_id", Auth::id())
+
+            ->select("tasks.*", "projects.name as project", "projects.color as project_color")->distinct()->get();
+
+
+
+
 
         return response()->json(
-            $task
+            $tasks
         );
-
     }
 
     function create(\Illuminate\Http\Request $request)

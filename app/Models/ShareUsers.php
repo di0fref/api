@@ -9,7 +9,8 @@ class ShareUsers extends ModelUuid
         'email',
         'status',
         'edit',
-        'user_id'
+        'user_id',
+        'shared_user_id'
     ];
 
     protected $casts = [

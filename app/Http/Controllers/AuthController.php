@@ -23,7 +23,7 @@ class AuthController extends Controller
      * Get a JWT via given credentials.
      *
      * @param Request $request
-     * @return Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
     {
@@ -50,10 +50,11 @@ class AuthController extends Controller
 
             /* Create the user */
             $user_data = $request->input("user");
-            $user = User::create([
+            User::create([
                 'name' => $user_data["displayName"],
                 'email' => $request->get("email"),
-                'password' => Hash::make($request->get("password"))
+                'password' => Hash::make($request->get("password")),
+                'id' => $user_data["uid"]
             ]);
 
 

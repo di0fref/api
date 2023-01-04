@@ -14,13 +14,5 @@ class ProjectsUsers extends ModelUuid
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    public function user()
-    {
-        return $this->belongsToMany(User::class);
-    }
 
-    public function project()
-    {
-        return $this->belongsToMany(User::class);
-    }
 }

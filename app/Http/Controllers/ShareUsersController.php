@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProjectsUsers;
 use App\Models\ShareUsers;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
 class ShareUsersController extends BaseController
@@ -11,13 +12,23 @@ class ShareUsersController extends BaseController
     function getAll(\Illuminate\Http\Request $request)
     {
 
-//        $shares = ShareUsers::where("project_id", $request->project_id)->get();
-//        return response()->json($shares);
+        $shares = ShareUsers::where("project_id", $request->project_id)
+            ->where("status", "pending")
+            ->get();
 
 
-                    $shares = ShareUsers::where("email", Auth::user()->email)->get();
+        $project_users = ProjectsUsers::where("project_id", $request->project_id )
 
- return response()->json($shares);
+            ->leftJoin("users", "users.id", "=", "projects_users.user_id")->distinct()
+
+            ->get();
+
+        return response()->json(
+            [
+                "shares" => $shares,
+                "project_users" => $project_users
+            ]
+        );
 
     }
 
@@ -32,7 +43,20 @@ class ShareUsersController extends BaseController
 
     function create(\Illuminate\Http\Request $request)
     {
-        $share = ShareUsers::create($request->all());
+        $user = User::where("email", $request->get("email"))->first();
+
+        if ($user) {
+            ProjectsUsers::create(
+                array(
+                    "user_id" => $user->id,
+                    "project_id" => $request->get("project_id")
+                )
+            );
+        }
+        $share = ShareUsers::create(
+            array_merge($request->all(), ["status" => "accepted"])
+        );
+
         return response()->json($share);
     }
 }

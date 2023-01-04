@@ -15,10 +15,10 @@ class CreateProjectsUsersTable extends Migration
     {
         Schema::create('projects_users', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->boolean('deleted')->default(0);
-            $table->string("user_id")->default(0);
-            $table->string("project_id")->default(0);
-            $table->boolean("edit")->default(0);
+            $table->boolean('deleted')->default(false);
+            $table->string("user_id")->default(null);
+            $table->string("project_id")->default(null);
+            $table->boolean("edit")->default(false);
             $table->timestamps();
 
         });
