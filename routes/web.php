@@ -13,7 +13,10 @@
 |
 */
 
-
+Route::get('/fire', function () {
+    event(new \App\Events\ExampleEvent());
+    return 'ok';
+});
 $router->get('/', function () use ($router) {
     echo "<center> Welcome </center>";
 });

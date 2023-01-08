@@ -2,7 +2,10 @@
 
 namespace App\Events;
 
-class ExampleEvent extends Event
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
+class ExampleEvent extends Event implements ShouldBroadcast
 {
     /**
      * Create a new event instance.
@@ -12,5 +15,17 @@ class ExampleEvent extends Event
     public function __construct()
     {
         //
+    }
+
+    public function broadcastOn()
+    {
+        return new Channel('test');
+    }
+    public function broadcastAs()
+    {
+        return 'UserLookingFor';
+
+
+        //return new PrivateChannel('test-channel');
     }
 }
