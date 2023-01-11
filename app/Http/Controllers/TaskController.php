@@ -65,13 +65,10 @@ class TaskController extends Controller
 //            ->select("users.image_url", "tasks.*","users.name as assigned_user_name", "projects.name as project", "projects.color as project_color")->first();
 //
 
-        $task = Task::whereBelongsTo(Auth::user())
-            ->where("tasks.id", $task->id)
+        $task = Task::where("tasks.id", $id)
             ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
             ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
             ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
-
-            ->orWhere("projects_users.user_id", Auth::id())
 
             ->select(
                 "tasks.*",
