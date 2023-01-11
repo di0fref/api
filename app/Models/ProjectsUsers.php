@@ -7,6 +7,9 @@ class ProjectsUsers extends ModelUuid
     protected $fillable = [
         'project_id',
         'user_id',
+        'shared_user_id',
+        "email",
+        "status"
     ];
 
     protected $casts = [

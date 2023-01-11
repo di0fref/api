@@ -24,6 +24,7 @@ class CreateTasksTable extends Migration
             $table->boolean('deleted')->default(0);
             $table->boolean("completed")->default(false);
             $table->dateTime("completed_at")->nullable()->default(null);
+            $table->string("assigned_user_id")->nullable()->default(null);
             $table->boolean("pinned")->default(false);
             $table->string("user_id")->default(0);
             $table->integer("order")->default(0)->nullable();

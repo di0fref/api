@@ -54,7 +54,8 @@ class AuthController extends Controller
                 'name' => $user_data["displayName"],
                 'email' => $request->get("email"),
                 'password' => Hash::make($request->get("password")),
-                'id' => $user_data["uid"]
+                'id' => $user_data["uid"],
+                "image_url" => $user_data["photoURL"],
             ]);
 
 

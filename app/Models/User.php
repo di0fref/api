@@ -20,7 +20,8 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'name',
         'email',
         'password',
-        'id'
+        'id',
+        "image_url"
     ];
 
     public function tasks()

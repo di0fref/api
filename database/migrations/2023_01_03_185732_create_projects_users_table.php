@@ -16,9 +16,12 @@ class CreateProjectsUsersTable extends Migration
         Schema::create('projects_users', function (Blueprint $table) {
             $table->uuid("id")->primary();
             $table->boolean('deleted')->default(false);
-            $table->string("user_id")->default(null);
+            $table->string("user_id")->default(null)->nullable(true);
             $table->string("project_id")->default(null);
-            $table->boolean("edit")->default(false);
+            $table->string("email")->default(null)->nullable(true);
+            $table->boolean("edit")->default(false)->nullable(true);
+            $table->enum("status",["pending", "accepted", "deleted", "owner"])->default(null);
+            $table->string("shared_user_id")->default(null);
             $table->timestamps();
 
         });

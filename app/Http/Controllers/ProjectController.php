@@ -12,7 +12,7 @@ class ProjectController extends Controller
     function getAll(\Illuminate\Http\Request $request)
     {
         $project = Project::where("projects_users.user_id", Auth::id())
-            ->orderBy("name", "asc")
+//            ->orderBy("name", "asc")
             ->orderBy("order", "asc")
             ->leftJoin("projects_users", "projects.id", "=", "projects_users.project_id")
             ->select("projects.*")->get();
@@ -21,7 +21,6 @@ class ProjectController extends Controller
             $project
         );
     }
-
 
     function create(\Illuminate\Http\Request $request)
     {
@@ -32,7 +31,10 @@ class ProjectController extends Controller
         ProjectsUsers::create(
             [
                 "user_id" => Auth::id(),
-                "project_id" => $project->id
+                "project_id" => $project->id,
+                "shared_user_id" =>  Auth::id(),
+                "status" => "owner",
+                "email" => ""
             ]
         );
 

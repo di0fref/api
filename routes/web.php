@@ -37,9 +37,10 @@ Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
     Route::post("projects", "ProjectController@create");
     Route::get("projects", "ProjectController@getAll");
 
-    Route::get("shares/{project_id}", "ShareUsersController@getAll");
-    Route::post("shares", "ShareUsersController@create");
-    Route::put("shares/{id}", "ShareUsersController@update");
+    Route::get("projects_users/{project_id}", "ProjectsUsersController@getAll");
+    Route::post("projects_users", "ProjectsUsersController@create");
+    Route::put("projects_users/{id}", "ProjectsUsersController@update");
+    Route::delete("projects_users/{id}", "ProjectsUsersController@delete");
 
 });
 

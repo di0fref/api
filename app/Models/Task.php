@@ -21,7 +21,8 @@ class Task extends ModelUuid
         "type",
         "prio",
         "project_id",
-        "pinned"
+        "pinned",
+        "assigned_user_id"
     ];
 
     protected $casts = [
