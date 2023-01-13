@@ -28,10 +28,13 @@ $router->get('/version', function () use ($router) {
 
 Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
 
+
     Route::get("tasks", "TaskController@getAll");
     Route::post("tasks", "TaskController@create");
     Route::put("tasks/{id}", "TaskController@update");
     Route::delete("tasks/{id}", "TaskController@delete");
+    Route::get("tasks/changes/{id}", "TaskController@getChanges");
+
 
     Route::put("projects/{id}", "ProjectController@update");
     Route::post("projects", "ProjectController@create");
