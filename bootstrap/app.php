@@ -99,10 +99,10 @@ $app->middleware([
  $app->register(App\Providers\AuthServiceProvider::class);
  $app->register(App\Providers\EventServiceProvider::class);
 
-$app->register(Illuminate\Redis\RedisServiceProvider::class);
-if (!class_exists('Redis')) {
-    class_alias('Illuminate\Support\Facades\Redis', 'Redis');
-}
+//$app->register(Illuminate\Redis\RedisServiceProvider::class);
+//if (!class_exists('Redis')) {
+//    class_alias('Illuminate\Support\Facades\Redis', 'Redis');
+//}
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes

@@ -19,13 +19,13 @@ class TaskController extends Controller
             ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
             ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
             ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
-            ->select(
-                "tasks.*",
-                "users.name as assigned_user_name",
-                "users.id as assigned_user_id",
-                "users.image_url",
-                "projects.name as project",
-                "projects.color as project_color")
+            ->selectRaw(
+                "tasks.*,
+                users.name as assigned_user_name,
+                users.id as assigned_user_id,
+                users.image_url,
+                CASE WHEN projects.name = '' or  projects.name is null THEN 'No project' ELSE projects.name END as project,
+                projects.color as project_color")
             ->first();
 
         return $task;
@@ -38,13 +38,13 @@ class TaskController extends Controller
             ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
             ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
             ->orWhere("projects_users.user_id", Auth::id())
-            ->select(
-                "tasks.*",
-                "users.name as assigned_user_name",
-                "users.id as assigned_user_id",
-                "users.image_url",
-                "projects.name as project",
-                "projects.color as project_color")
+            ->selectRaw(
+                "tasks.*,
+                users.name as assigned_user_name,
+                users.id as assigned_user_id,
+                users.image_url,
+                CASE WHEN projects.name = '' or  projects.name is null THEN 'No project' ELSE projects.name END as project,
+                projects.color as project_color")
             ->distinct()->get();
 
 
