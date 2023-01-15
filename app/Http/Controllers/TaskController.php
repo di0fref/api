@@ -22,6 +22,7 @@ class TaskController extends Controller
             ->orderBy("task_changes.created_at", "desc")
             ->selectRaw(
                 "
+                task_changes.id as id,
                 users.name as changed_by_name,
                 task_changes.created_at,
                 task_changes.field,
@@ -51,7 +52,12 @@ class TaskController extends Controller
 
     function getAll(\Illuminate\Http\Request $request)
     {
-        $tasks = Task::whereBelongsTo(Auth::user())->leftJoin("projects", "projects.id", "=", "tasks.project_id")->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")->orWhere("projects_users.user_id", Auth::id())->selectRaw("tasks.*,
+        $tasks = Task::whereBelongsTo(Auth::user())
+            ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
+            ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
+            ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
+            ->orWhere("projects_users.user_id", Auth::id())
+            ->selectRaw("tasks.*,
                 users.name as assigned_user_name,
                 users.id as assigned_user_id,
                 users.image_url,
