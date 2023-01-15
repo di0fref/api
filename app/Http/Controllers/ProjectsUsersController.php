@@ -20,6 +20,7 @@ class ProjectsUsersController extends BaseController
                 projects_users.id,
                 users.id as user_id,
                 users.name,
+                users.image_url,
                 projects_users.project_id,
                 projects_users.shared_user_id")
             ->orderByRaw("FIELD(status , 'owner', 'pending', 'accepted') ASC")
