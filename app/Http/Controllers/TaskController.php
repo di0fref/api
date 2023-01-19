@@ -13,15 +13,12 @@ use function response;
 
 class TaskController extends Controller
 {
-    function getChanges($id, \Illuminate\Http\Request $request){
-        $changes = TaskChanges::where("task_id", $id)
-            ->leftJoin("tasks", "tasks.id", "=", "task_changes.task_id")
-            ->leftJoin("users", "users.id", "=", "task_changes.user_id")
+    function getChanges($id, \Illuminate\Http\Request $request)
+    {
+        $changes = TaskChanges::where("task_id", $id)->leftJoin("tasks", "tasks.id", "=", "task_changes.task_id")->leftJoin("users", "users.id", "=", "task_changes.user_id")
 //            ->leftJoin("project", "project.id", "=", "task_changes.task_id")
 
-            ->orderBy("task_changes.created_at", "desc")
-            ->selectRaw(
-                "
+            ->orderBy("task_changes.created_at", "desc")->selectRaw("
                 task_changes.id as id,
                 users.name as changed_by_name,
                 task_changes.created_at,
@@ -32,10 +29,15 @@ class TaskController extends Controller
                 DATE_FORMAT(task_changes.created_at, '%Y-%m-%d') as day_changed,
                 task_changes.type,
                 users.image_url
-                "
-            )->get();
+                ")->get();
 
         return response()->json($changes, 200);
+    }
+
+    public function getOne($id)
+    {
+        return response()->json($this->getTask($id), 201);
+
     }
 
     function getTask($id)
@@ -52,12 +54,8 @@ class TaskController extends Controller
 
     function getAll(\Illuminate\Http\Request $request)
     {
-        $tasks = Task::whereBelongsTo(Auth::user())
-            ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
-            ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
-            ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
-            ->orWhere("projects_users.user_id", Auth::id())
-            ->selectRaw("tasks.*,
+        $tasks = Task::whereBelongsTo(Auth::user())->leftJoin("projects", "projects.id", "=", "tasks.project_id")->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")->orWhere("projects_users.user_id", Auth::id())->selectRaw("tasks.*,
+                tasks.name as title,
                 users.name as assigned_user_name,
                 users.id as assigned_user_id,
                 users.image_url,
@@ -84,7 +82,7 @@ class TaskController extends Controller
         /* Log changes */
 
         foreach ($request->get("changes") as $change) {
-            if(isset($change["field"])){
+            if (isset($change["field"])) {
                 TaskChanges::create(array_merge($change, ["task_id" => $task->id]));
             }
         }

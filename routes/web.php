@@ -28,6 +28,7 @@ $router->get('/version', function () use ($router) {
 
 Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
 
+    Route::get("tasks/{id}", "TaskController@getOne");
 
     Route::get("tasks", "TaskController@getAll");
     Route::post("tasks", "TaskController@create");
@@ -39,6 +40,7 @@ Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
     Route::put("projects/{id}", "ProjectController@update");
     Route::post("projects", "ProjectController@create");
     Route::get("projects", "ProjectController@getAll");
+    Route::delete("projects_/{id}", "ProjectController@delete");
 
     Route::get("projects_users/{project_id}", "ProjectsUsersController@getAll");
     Route::post("projects_users", "ProjectsUsersController@create");
