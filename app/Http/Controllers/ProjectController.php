@@ -13,7 +13,11 @@ class ProjectController extends Controller
     {
         $projects = Project::where("projects_users.user_id", Auth::id())
 //            ->orderBy("name", "asc")
-            ->orderBy("order", "asc")->leftJoin("projects_users", "projects.id", "=", "projects_users.project_id")->select("projects.*")->get();
+            ->orderBy("order", "asc")
+            ->leftJoin("projects_users", "projects.id", "=", "projects_users.project_id")
+            ->whereIn("projects_users.status", ["accepted", "owner"])
+//             ->orWhere("projects_users.status", "owner")
+            ->select("projects.*")->distinct()->get();
 
 
         foreach ($projects as $project){
