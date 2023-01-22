@@ -15,4 +15,7 @@ class UserController extends Controller
 
         return response()->json($user, 201);
     }
+    function me($id){
+        return response()->json("ok", 201);
+    }
 }

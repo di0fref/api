@@ -58,41 +58,10 @@ class AuthController extends Controller
                 "image_url" => $user_data["photoURL"],
             ]);
 
-
-            /* Find shares and assign them correctly */
-
-//            $shares = ShareUsers::where("email", Auth::user()->email)->get();
-//
-//
-//
-//            if($shares){
-//                foreach ($shares as $share) {
-//                    ProjectsUsers::create(
-//                        array(
-//                            "user_id" => $user->id,
-//                            "project_id" => $share->project_id,
-//                        ));
-//                }
-
-
-
             if (!$token = Auth::attempt($credentials)) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
         }
-//
-//                    $shares = ShareUsers::where("email", Auth::user()->email)->get();
-//
-//
-//
-//            if($shares) {
-//                foreach ($shares as $share) {
-//                    ProjectsUsers::create(array(
-//                            "user_id" => Auth::id(),
-//                            "project_id" => $share->project_id,
-//                        ));
-//                }
-//            }
 
         return $this->respondWithToken($token);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use App\Models\Project;
 use App\Models\ProjectsUsers;
 use App\Models\Task;
 use App\Models\TaskChanges;
@@ -49,6 +51,8 @@ class TaskController extends Controller
                 CASE WHEN projects.name = '' or  projects.name is null THEN 'No project' ELSE projects.name END as project,
                 projects.color as project_color")->first();
 
+        $task->link = "kale";
+
         return $task;
     }
 
@@ -62,6 +66,9 @@ class TaskController extends Controller
                 CASE WHEN projects.name = '' or  projects.name is null THEN 'No project' ELSE projects.name END as project,
                 projects.color as project_color")->distinct()->get();
 
+//        foreach ($tasks as $task) {
+//            $task->link = "ömdvöm";
+//        }
 
         return response()->json($tasks);
     }
@@ -81,12 +88,50 @@ class TaskController extends Controller
 
         /* Log changes */
 
-        foreach ($request->get("changes") as $change) {
+        $changes = $request->get("changes");
+
+        foreach ($changes as $change) {
             if (isset($change["field"])) {
                 TaskChanges::create(array_merge($change, ["task_id" => $task->id]));
             }
         }
 
+        $notifications = $request->get("notifications");
+
+        if (!empty($notifications)) {
+            foreach ($request->get("notifications") as $notification) {
+
+                $notification = (object)$notification;
+
+                $action_user = User::findOrFail($notification->action_user_id);
+                $notify_user = User::findOrFail($notification->notify_user_id);
+
+
+                switch ($notification->module) {
+                    case "task":
+                        $module = Task::findOrFail($notification->module_id);
+                        break;
+                    case "project":
+                        $module = Project::findOrFail($notification->module_id);
+                        break;
+                    default:
+                        throw new \Exception("No such module " . $notification->module);
+                }
+
+                Notification::create(
+                    [
+                        "notify_user_id" => $notification->notify_user_id,
+                        "notify_user_name" => $notify_user->name,
+                        "action" => $notification->action,
+                        "module_id" => $module->id,
+                        "module_name" => $module->name,
+                        "module" => $notification->module,
+                        "action_user_id" => $notification->action_user_id,
+                        "action_user_name" => $action_user->name,
+                    ]
+                );
+            }
+        }
 
         return response()->json($this->getTask($task->id), 201);
     }

@@ -7,6 +7,7 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 //this is new
 use Ramsey\Uuid\Uuid;
@@ -23,7 +24,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'id',
         "image_url"
     ];
-
+//    function password(): Attribute
+//    {
+//        return Attribute::make(
+//            get: fn($value) => null
+//        );
+//    }
     public function tasks()
     {
         return $this->hasMany(Task::class);

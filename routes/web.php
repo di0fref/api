@@ -13,22 +13,17 @@
 |
 */
 
-Route::get('/fire', function () {
-    event(new \App\Events\ExampleEvent());
-    return 'ok';
-});
 $router->get('/', function () use ($router) {
     echo "<center> Welcome </center>";
 });
 
-$router->get('/version', function () use ($router) {
-    return $router->app->version();
-});
 
 
 Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
+    Route::get('me', 'UserController@me');
 
-    Route::get("users/{id}", "UserController@getUser");
+    Route::get("notifications", "NotificationController@getAll");
+
 
     Route::get("tasks/{id}", "TaskController@getOne");
 
@@ -38,13 +33,12 @@ Route::group(['prefix' => 'api', 'middleware' => 'auth'], function ($router) {
     Route::delete("tasks/{id}", "TaskController@delete");
     Route::get("tasks/changes/{id}", "TaskController@getChanges");
 
-    Route::get("projects_users/pending/{email}", "ProjectsUsersController@getPendning");
+    Route::get("projects_users/pending/{email}", "ProjectsUsersController@getPending");
 
     Route::put("projects/{id}", "ProjectController@update");
     Route::post("projects", "ProjectController@create");
     Route::get("projects", "ProjectController@getAll");
     Route::delete("projects_/{id}", "ProjectController@delete");
-
 
     Route::get("projects_users/{project_id}", "ProjectsUsersController@getAll");
     Route::post("projects_users", "ProjectsUsersController@create");
@@ -57,7 +51,7 @@ Route::group(['prefix' => 'api'], function ($router) {
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
-    Route::post('user-profile', 'AuthController@me');
+//    Route::post('me', 'AuthController@me');
 });
 
 
