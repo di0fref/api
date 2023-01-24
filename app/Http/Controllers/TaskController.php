@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\NotificationsUsers;
 use App\Models\Project;
 use App\Models\ProjectsUsers;
 use App\Models\Task;
@@ -44,7 +45,11 @@ class TaskController extends Controller
 
     function getTask($id)
     {
-        $task = Task::where("tasks.id", $id)->leftJoin("projects", "projects.id", "=", "tasks.project_id")->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")->selectRaw("tasks.*,
+        $task = Task::where("tasks.id", $id)
+            ->leftJoin("projects", "projects.id", "=", "tasks.project_id")
+            ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
+            ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
+            ->selectRaw("tasks.*,
                 users.name as assigned_user_name,
                 users.id as assigned_user_id,
                 users.image_url,
@@ -58,12 +63,17 @@ class TaskController extends Controller
 
     function getAll(\Illuminate\Http\Request $request)
     {
-        $tasks = Task::whereBelongsTo(Auth::user())->leftJoin("projects", "projects.id", "=", "tasks.project_id")->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")->orWhere("projects_users.user_id", Auth::id())->selectRaw("tasks.*,
+        $tasks = Task::leftJoin("projects", "projects.id", "=", "tasks.project_id")
+            ->leftJoin("projects_users", "projects_users.project_id", "=", "projects.id")
+            ->leftJoin("users", "tasks.assigned_user_id", "=", "users.id")
+            ->whereIn("projects_users.status",["owner", "accepted"] )
+            ->where("projects_users.user_id", Auth::id())
+            ->selectRaw("tasks.*,
                 tasks.name as title,
                 users.name as assigned_user_name,
                 users.id as assigned_user_id,
                 users.image_url,
-                CASE WHEN projects.name = '' or  projects.name is null THEN 'No project' ELSE projects.name END as project,
+                CASE WHEN projects.name = '' or projects.name is null THEN 'No project' ELSE projects.name END as project,
                 projects.color as project_color")->distinct()->get();
 
 //        foreach ($tasks as $task) {
@@ -103,33 +113,24 @@ class TaskController extends Controller
 
                 $notification = (object)$notification;
 
-                $action_user = User::findOrFail($notification->action_user_id);
-                $notify_user = User::findOrFail($notification->notify_user_id);
-
-
-                switch ($notification->module) {
-                    case "task":
-                        $module = Task::findOrFail($notification->module_id);
-                        break;
-                    case "project":
-                        $module = Project::findOrFail($notification->module_id);
-                        break;
-                    default:
-                        throw new \Exception("No such module " . $notification->module);
-                }
-
-                Notification::create(
+                $new_notification = Notification::create(
                     [
-                        "notify_user_id" => $notification->notify_user_id,
-                        "notify_user_name" => $notify_user->name,
+                        "user_id" => $notification->user_id,
                         "action" => $notification->action,
-                        "module_id" => $module->id,
-                        "module_name" => $module->name,
+                        "module_id" => $notification->module_id,
                         "module" => $notification->module,
-                        "action_user_id" => $notification->action_user_id,
-                        "action_user_name" => $action_user->name,
+                        "by_user_id" => $notification->by_user_id,
                     ]
                 );
+
+                $project_users = ProjectsUsers::where("project_id", $task->project_id)->get();
+
+                foreach ($project_users as $project_user) {
+                    NotificationsUsers::create([
+                        "user_id" => $project_user->user_id,
+                        "notification_id" => $new_notification->id
+                    ]);
+                }
             }
         }
 

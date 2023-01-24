@@ -6,22 +6,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
-class Notification extends ModelUuid
+class NotificationsUsers extends ModelUuid
 {
     protected $fillable = [
         "user_id",
-        "action",
-        "module_id",
-        "module",
-        "by_user_id"
+        "notification_id",
+        "status",
     ];
 
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i',
         'updated_at' => 'datetime:Y-m-d H:i',
     ];
-    public function notificationusers()
+    public function user()
     {
-        return $this->hasMany(NotificationsUsers::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function nofification()
+    {
+        return $this->belongsTo(Notification::class);
     }
 }
+

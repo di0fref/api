@@ -15,18 +15,25 @@ class NotificationController extends Controller
     function getAll(\Illuminate\Http\Request $request)
     {
 
-        $notifications = Notification::leftJoin("projects_users", "projects_users.project_id", "=", "notifications.module_id")
-            ->leftJoin("users", "users.id", "=", "notifications.user_id")
-            ->where("projects_users.user_id", Auth::id())
-            ->select("notifications.*")->get();
+        $notifications =  Notification::leftJoin("notifications_users", "notifications_users.notification_id" ,"=", "notifications.id")
+        ->where("notifications_users.user_id", Auth::id())
+            ->select("notifications.*", "notifications_users.status as status" )
+            ->get();
+
+//        $notifications = Notification::leftJoin("projects_users", "projects_users.project_id", "=", "notifications.module_id")
+//            ->leftJoin("users", "users.id", "=", "notifications.user_id")
+//            ->where("projects_users.user_id", Auth::id())
+//            ->select("notifications.*")->get();
 
         foreach ($notifications as $notification) {
-            $notification["user"] = User::findOrFail($notification->user_id);
+            $notification["by_user"] = User::find($notification->by_user_id);
+            $notification["to_user"] = User::find($notification->user_id);
+
             if ($notification->module === "Project") {
-                $notification["bean"] = Project::findOrFail($notification->module_id);
+                $notification["bean"] = Project::find($notification->module_id);
             }
             if ($notification->module === "Task") {
-                $notification["bean"] = Task::findOrFail($notification->module_id);
+                $notification["bean"] = Task::find($notification->module_id);
             }
         }
 

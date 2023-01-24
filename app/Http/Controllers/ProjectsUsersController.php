@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\NotificationsUsers;
 use App\Models\ProjectsUsers;
-use App\Models\ShareUsers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use App\Models\Project;
+
 
 class ProjectsUsersController extends BaseController
 {
@@ -43,13 +44,25 @@ class ProjectsUsersController extends BaseController
     {
         $share = ProjectsUsers::findOrFail($id);
 
-        if($share->status === "pending" and $request->get("status") === "accepted"){
-            Notification::create([
-                "action" =>  "joined",
+        if ($share->status === "pending" and $request->get("status") === "accepted") {
+            $notification = Notification::create([
+                "action" => "joined",
                 "module" => "Project",
                 "module_id" => $request->get("module_id"),
                 "user_id" => Auth::id(),
+                "by_user_id" => Auth::id(),
             ]);
+
+
+            $project_users = ProjectsUsers::where("project_id", $request->get("module_id"))->get();
+
+            foreach ($project_users as $project_user) {
+                NotificationsUsers::create([
+                    "user_id" => $project_user->user_id,
+                    "notification_id" => $notification->id
+                ]);
+            }
+
         }
 
         $share->update($request->all());
@@ -62,10 +75,9 @@ class ProjectsUsersController extends BaseController
         $shares = ProjectsUsers::where("email", $email)
             ->where("status", "pending")
             ->leftJoin("projects", "projects_users.project_id", "=", "projects.id")
-            ->select("*","projects_users.id as id", "projects.name as project_name")
-
+            ->select("*", "projects_users.id as id", "projects.name as project_name")
             ->get();
-         return response()->json($shares);
+        return response()->json($shares);
     }
 
 
@@ -74,12 +86,12 @@ class ProjectsUsersController extends BaseController
         $user = User::where("email", $request->get("email"))->first();
 
         $share = ProjectsUsers::create(array(
-                "user_id" => $user?->id,
-                "project_id" => $request->get("project_id"),
-                "email" => $request->get("email"),
-                "status" => "pending",
-                "shared_user_id" => $request->get("shared_user_id"),
-            ));
+            "user_id" => $user?->id,
+            "project_id" => $request->get("project_id"),
+            "email" => $request->get("email"),
+            "status" => "pending",
+            "shared_user_id" => $request->get("shared_user_id"),
+        ));
 
         return response()->json($share);
     }

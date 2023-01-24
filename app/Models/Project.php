@@ -12,7 +12,7 @@ class Project extends ModelUuid
         "order",
         "color"
     ];
-    protected $hidden = ['password'];
+
     protected $casts = [
         "completed" => "boolean",
         "deleted" => "boolean",
